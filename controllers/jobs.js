@@ -19,7 +19,13 @@ const getAllJobs = async (req, res) => {
 }
 
 const getJob = async (req, res) => {
-	res.send('get job')
+const {user:{userId}, params:{id:jobId}}= req
+const job = await Job.findOne({
+	_id:jobId,
+	createdBy:userId
+})
+
+
 }
 
 const createJob = async (req, res) => {
@@ -31,11 +37,11 @@ const createJob = async (req, res) => {
 }
 
 const updateJob = async (req, res) => {
-	res.send('update job')
+	res.send('Update job')
 }
 
 const deleteJob = async (req, res) => {
-	res.send('delete job')
+	res.send('Delete job')
 }
 
 
