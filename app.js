@@ -34,6 +34,10 @@ app.use(helmet())
 app.use(cors())
 app.use(xss())
 
+app.get('/', (req, res) => {
+	res.send('<h1>Jobs API</h1><a href="/api-docs">Documentation</a>');
+  });
+
 // extra packages
 
 // routes
