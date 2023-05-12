@@ -92,7 +92,7 @@ paths:
       - bearer: []
     get:
       tags:
-      - jobs
+      - Jobs
       summary: Get All Jobs
       operationId: GetAllJobs
       parameters: []
