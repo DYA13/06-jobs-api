@@ -29,7 +29,7 @@ const jobsRouter = require('./routes/jobs')
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
 
-app.set('trust proxy',1)
+app.set('trust proxy', 1)
 app.use(rateLimiter({
 	windowMs: 15 * 60 * 1000, // 15 minutes
 	max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
@@ -41,8 +41,8 @@ app.use(xss())
 
 app.get('/', (req, res) => {
 	res.send('<h1>Jobs API</h1><a href="/api-docs">Documentation</a>');
-  });
-  app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument))
+});
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument))
 
 
 
