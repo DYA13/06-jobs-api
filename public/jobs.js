@@ -65,7 +65,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const addingJob = document.getElementById("adding-job");
     const jobsMessage = document.getElementById("jobs-message");
     const editCancel = document.getElementById("edit-cancel");
-  
+    const deleteButtons = document.querySelectorAll(".deleteButton");
+
+
     // section 2 
     let showing = logonRegister;
   let token = null;
@@ -100,6 +102,8 @@ document.addEventListener("DOMContentLoaded", () => {
   var suspendInput = false;
 
   // section 3
+
+
   document.addEventListener("click", async (e) => {
     if (suspendInput) {
       return; // we don't want to act on buttons while doing async operations
@@ -200,7 +204,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         suspendInput = false;
       }
-    } // section 4
+    }
+     // section 4
+
     else if (e.target === addJob) {
         showing.style.display = "none";
         editJob.style.display = "block";
@@ -288,7 +294,10 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         }
         suspendInput = false;
-      } // section 5
+      } 
+      // section 5
+      //Edit job
+
       else if (e.target.classList.contains("editButton")) {
         editJob.dataset.id = e.target.dataset.id;
         suspendInput = true;
@@ -321,7 +330,42 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         suspendInput = false;
       }
-  })
-  
-  });
-  
+
+//Section 6
+// delete job
+// How do you know it is a delete? In the buildJobsTable function, each of the delete buttons is given a class of deleteButton. You check for that class in the e.target.
+// How do you know which entry to delete? The id of the entry is stored in the data-id of the button, as done in the buildJobsTable function.
+// How do you do the delete? You need a call to fetch with a method of DELETE giving the URL of that entry. Be sure you include the authorization header. Also, remember that fetch is asynchronous, and should be called in a try/catch block.
+// What do you do if the delete succeeds? First, you put a message in the text content of the message paragraph. Second, you redraw the table showing the updated list of entries. You can redraw the table by dispatching an event to startDisplay. You’ll see other places in the code where this is done?
+// What do you do if the delete fails? Put a message indicating the failure in the message paragraph.
+// Anything else? You don’t want to take input while these asynchronous operations are in progress, so you set the suspendInput flag before you start them, and clear it afterwards.
+
+else if (e.target.classList.contains('deleteButton')) {
+    editJob.dataset.id = e.target.dataset.id;
+    suspendInput = true;
+    try {
+      const response = await fetch(`/api/v1/jobs/${e.target.dataset.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (response.status === 200) {
+        message.textContent = 'This job entry has been successfully deleted';
+        thisEvent = new Event('startDisplay');
+        document.dispatchEvent(thisEvent);
+      } else {
+        // might happen if the list has been updated since last display
+        message.textContent = 'The jobs entry was not found';
+        thisEvent = new Event('startDisplay');
+        document.dispatchEvent(thisEvent);
+      }
+    } catch (err) {
+      message.textContent = 'A delete fail has occurred.';
+    }
+    suspendInput = false;
+  }
+});
+});
