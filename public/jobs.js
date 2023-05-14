@@ -1,3 +1,15 @@
+//This section of code calls a function, buildJobsTable. 
+//This function does the complicated task of populating the jobs table. 
+//This function is async because it will eventually await a fetch call to retrieve the list of jobs.
+//In this code, there is a GET request for all of the jobs entries. 
+//If no entries are returned, the function just returns 0.
+// If entries are returned, they must be added to the table in the following columns: company, position, status, edit button, delete button. 
+//The rows of the table are accumulated in a loop, with the first row being the table header row. 
+//The tricky part is the buttons. We need to identify whether a button represents an add or delete. This is done with the editButton and deleteButton classes.
+// We also have to record which jobs entry corresponds to which button. This is done with the dataset.id attribute, which is set in the HTML using dataset-id.
+// Then the HTML for each row is created and turned into a DOM entry. 
+//The table is updated with the rows using a replaceChildren() call.
+
 async function buildJobsTable(jobsTable, jobsTableHeader, token, message) {
     try {
       const response = await fetch("/api/v1/jobs", {
@@ -67,7 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const editCancel = document.getElementById("edit-cancel");
     const deleteButtons = document.querySelectorAll(".deleteButton");
 
-
+    //The home page will show a logon button and a register button if the user is not logged in. 
+    //If the user is logged in, the logoff button is shown, as well as a table of jobs entries, if the user has any. 
+    //Because the home page must be brought up at various points in the application, you create an event listener for it, and trigger its display by dispatching an event.
+    // This is the next section of code to be added, after the line that says section 2:
     // section 2 
     let showing = logonRegister;
   let token = null;
@@ -100,8 +115,24 @@ document.addEventListener("DOMContentLoaded", () => {
   var thisEvent = new Event("startDisplay");
   document.dispatchEvent(thisEvent);
   var suspendInput = false;
+  //In the code above, several operational variables (token, showing, thisEvent, and suspendInput) are created. 
+  //The token is retrieved from local storage. Local storage persists even if the page is refreshed. 
+  //If the token is not present in local storage, that means the user is not logged in, so the logon/register div is shown. 
+  //Otherwise the logoff button and the jobs div are shown. 
+  //The jobs div contains the table for jobs entries, and this is shown only if the user has jobs entries. 
+  //The showing variable keeps track of which div is being shown. The thisEvent variable is used to create an event, which, when dispatched, triggers the home page display.
+  // Divs are shown and hidden by setting the style.display for the div to “block” or “none”.
 
-  // section 3
+ // section 3
+//   The flow of the application is controlled by button clicks, so you need an event listener to catch those. 
+//   The first button click to handle is the logon. 
+//   The callback for the click event listener is async, because there are awaits for fetch calls in the body of that function.
+// First, if an async operation is in progress, you do not want to handle button clicks, because that could disrupt the flow of the application. The suspendInput variable is set to true if an asynchronous operation is in progress, and false once that operation completes. If suspendIInput is true, the button click is ignored. Second, the message variable stores the DOM entry of a paragraph that displays messages to the user. The message has to be cleared when a subsequent button click occurs. The code that follows handles clicks for the logoff, logon, register, logonCancel, registerCancel, logonButton, and registerButton. Let’s discuss each in turn.
+// The logoff button clears the token and removes it from local storage, so the user is no longer logged on. The contents of the jobs table are also cleared, so that the next user can’t access them. Note that even if the jobs table is hidden, a user could see its contents using browser development tools. The table is cleared by making the header row as the only child of the table. Then an event is dispatched to cause the home screen to display, and a message (you are logged off) is shown.
+// The logon button causes the logonDiv to be shown. The home screen is hidden by setting the style.display of showing to “none”. Similarly the register button causes the registerDiv to be shown. THe logonCancel and registerCancel buttons just trigger the display of the home page.
+// The logonButton button causes user input (email and password) to be collected. Then (!!!) a jobs API is called, using fetch. This is done inside of a try/catch block, in case of error conditions. If a successful (status 200) response is recieved, the body of the response contains the JWT token, so this is stored in local storage and the home page display is triggered. Otherwise the body of the response contains a message, which is displayed in the message paragraph. Note that the URL for the API call is a relative URL, /api/v1/login . This means that the web address to be called is the same one as for the index.html page.
+// The registerButton button works similarly, except that the user is registered, instead of logging in an existing user.
+// At this point, after the code above has been added and saved, go to the localhost:3000 page and refresh it. You will find that several functions now work, including register, logon, and logoff. Try them out. Of course, there is nothing to handle the CRUD operations: creating, reading, updating, or deleting jobs entries.
 
 
   document.addEventListener("click", async (e) => {
@@ -206,7 +237,23 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
      // section 4
-
+    //  The addJob button causes the editJob div to be shown in place of the home page. 
+    //This div is used both for add and for edit. 
+    //You need to keep track of whether an add or edit is being done. 
+    //This is done with the editJob.dataset.id value. 
+    //The dataset attribute of a DOM entry may be used to store arbitrary values. 
+    //If editJob.dataset.id is not set, then this is an add.
+    // If it is set, it holds the value of the entry being edited. 
+    //You will see how that value is set for an edit further on in the lesson. 
+    //If the addingJob pushbutton is clicked, an add or an update is attempted. 
+    //If this is successful, a messsage is displayed to the user and the display of the home page is triggered. 
+    //If the add or update operation fails, a message, taken from the body of the response, is showed to the user. 
+    //The add operation corresponds to a fetch call with POST as the method. 
+    //The update operation corresponds to a fetch with a PATCH method. Note that, unlike the logon and register, these operations use and require the Authorization header, which has the bearer token. 
+    //If that is not present, the operation fails with a 401 not authorized result code.
+    //  Once you have added this code, try out the application again. You are now able to add entries, but you can’t actually see them. Next you add the code to populate the table of jobs entries.
+     
+     
     else if (e.target === addJob) {
         showing.style.display = "none";
         editJob.style.display = "block";
