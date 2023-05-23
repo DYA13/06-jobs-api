@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
   //Otherwise the logoff button and the jobs div are shown. 
   //The jobs div contains the table for jobs entries, and this is shown only if the user has jobs entries. 
   //The showing variable keeps track of which div is being shown. The thisEvent variable is used to create an event, which, when dispatched, triggers the home page display.
-  // Divs are shown and hidden by setting the style.display for the div to “block” or “none”.
+  // Div are shown and hidden by setting the style.display for the div to “block” or “none”.
 
  // section 3
 //   The flow of the application is controlled by button clicks, so you need an event listener to catch those. 
